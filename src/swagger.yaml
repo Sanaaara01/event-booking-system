@@ -1,0 +1,267 @@
+openapi: 3.0.3
+info:
+  title: Mini Event Booking System API
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+paths:
+  /events:
+    get:
+      summary: Get all events
+      responses:
+        '200':
+          description: List of events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    title:
+                      type: string
+                    description:
+                      type: string
+                    date:
+                      type: string
+                      format: date
+                    total_capacity:
+                      type: integer
+                    remaining_tickets:
+                      type: integer
+    post:
+      summary: Create a new event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                date:
+                  type: string
+                  format: date
+                total_capacity:
+                  type: integer
+      responses:
+        '200':
+          description: Event created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  eventId:
+                    type: integer
+        '400':
+          description: Error creating event
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /bookings:
+    post:
+      summary: Book a ticket for an event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                event_id:
+                  type: integer
+      responses:
+        '200':
+          description: Booking successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  bookingCode:
+                    type: string
+        '400':
+          description: Error in booking
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /users/{id}/bookings:
+    get:
+      summary: Get all bookings for a user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of user bookings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    user_id:
+                      type: integer
+                    event_id:
+                      type: integer
+                    booking_code:
+                      type: string
+                    booking_date:
+                      type: string
+                      format: date-time
+
+  /events/{id}/attendance:
+    post:
+      summary: Record attendance using booking code
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bookingCode:
+                  type: string
+      responses:
+        '200':
+          description: Attendance recorded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  ticketsChecked:
+                    type: integer
+        '400':
+          description: Invalid booking code
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+
+# openapi: 3.0.0
+# info:
+#   title: Event Booking API
+#   version: 1.0.0
+# paths:
+#   /events:
+#     get:
+#       summary: List all upcoming events
+#       responses:
+#         '200':
+#           description: List of events
+#     post:
+#       summary: Create a new event
+#       requestBody:
+#         required: true
+#         content:
+#           application/json:
+#             schema:
+#               type: object
+#               required: [title, date, total_capacity]
+#               properties:
+#                 title:
+#                   type: string
+#                 description:
+#                   type: string
+#                 date:
+#                   type: string
+#                   format: date-time
+#                 total_capacity:
+#                   type: integer
+#       responses:
+#         '201':
+#           description: Event created
+#   /bookings:
+#     post:
+#       summary: Book a ticket
+#       requestBody:
+#         required: true
+#         content:
+#           application/json:
+#             schema:
+#               type: object
+#               required: [user_id, event_id]
+#               properties:
+#                 user_id:
+#                   type: integer
+#                 event_id:
+#                   type: integer
+#       responses:
+#         '201':
+#           description: Booking confirmed with unique code
+#         '400':
+#           description: No tickets available
+#   /users/{id}/bookings:
+#     get:
+#       summary: Get bookings for a user
+#       parameters:
+#         - in: path
+#           name: id
+#           required: true
+#           schema:
+#             type: integer
+#       responses:
+#         '200':
+#           description: User bookings list
+#   /events/{id}/attendance:
+#     post:
+#       summary: Mark attendance using booking code
+#       parameters:
+#         - in: path
+#           name: id
+#           required: true
+#           schema:
+#             type: integer
+#       requestBody:
+#         required: true
+#         content:
+#           application/json:
+#             schema:
+#               type: object
+#               properties:
+#                 code:
+#                   type: string
+#       responses:
+#         '200':
+#           description: Attendance marked, returns ticket count
